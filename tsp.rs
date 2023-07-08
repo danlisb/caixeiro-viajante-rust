@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io::prelude::*;
 
 fn main() {
+    let args = std::args.
     println!("In file {}", tsp1_253.txt);
 
     let mut f = File::open(tsp1_253.txt).expect("file not found");
