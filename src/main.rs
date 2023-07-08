@@ -1,7 +1,6 @@
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
-use std::process;
 use std::process::exit;
 
 fn main() {
@@ -16,11 +15,11 @@ fn main() {
     let filepath = &args[1];
 
     println!("Arquivo: {}", filepath);
-    let mut f = File::open(filepath).expect("file not found");
+    let mut f = File::open(filepath).expect("Arquivo não encontrado!");
 
     let mut contents = String::new();
     f.read_to_string(&mut contents)
-        .expect("something went wrong reading the file");
+        .expect("Erro ao ler o arquivo!");
 
-    println!("With text:\n{}", contents);
+    println!("Conteudo:\n{}", contents);
 }
