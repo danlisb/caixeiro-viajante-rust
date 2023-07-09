@@ -36,17 +36,24 @@ fn main() {
 
     // Pegando os valores da matriz com regex
     let regex = Regex::new(r"\d+").unwrap();
-    let mut valores_matriz: Vec<i32> = regex
-        .find_iter(&contents)
-        .map(|m| m.as_str().parse::<i32>().unwrap())
-        .collect();
+    let mut valores_matriz: Vec<Vec<i32>> = Vec::new();
+
+    for line in contents.lines() {
+        let temp = regex
+            .find_iter(line)
+            .map(|m| m.as_str().parse::<i32>().unwrap())
+            .collect();
+
+        valores_matriz.push(temp);
+    }
 
     // Calculando tamanho da matriz
-    let tam_matriz: u32 = (valores_matriz.len() as f64).sqrt() as u32;
+    let tam_matriz: u32 = valores_matriz.len() as u32;
+
     // Criando os numeros para permutar
-    let mut permutation_numbers: Vec<i32> = Vec::new();
+    let mut permutation_numbers: Vec<usize> = Vec::new();
     for i in 0..tam_matriz {
-        permutation_numbers.push(i as i32);
+        permutation_numbers.push(i as usize);
     }
 
     println!("Tam matriz: {}", tam_matriz);
@@ -59,8 +66,8 @@ fn main() {
     let start = SystemTime::now();
     pinzon_rodrigues_lisboa(
         permutation_numbers.as_mut_slice(),
-        0,
-        &mut valores_matriz,
+        1,
+        &valores_matriz,
         &mut best_size,
     );
     let total_time = SystemTime::now().duration_since(start).unwrap();
@@ -77,13 +84,13 @@ fn main() {
 }
 
 fn pinzon_rodrigues_lisboa(
-    numbers: &mut [i32],
+    numbers: &mut [usize],
     start: usize,
-    matriz: &mut Vec<i32>,
+    matriz: &Vec<Vec<i32>>,
     size_path: &mut i32,
 ) {
     if start == numbers.len() {
-        let temp_size_path = calcula_tam_caminho(&numbers, matriz);
+        let temp_size_path = calcula_tam_caminho(numbers, matriz);
 
         if *size_path > temp_size_path {
             *size_path = temp_size_path;
@@ -98,24 +105,15 @@ fn pinzon_rodrigues_lisboa(
     }
 }
 
-fn calcular_index(lin: i32, col: i32, cols: i32) -> i32 {
-    return (lin * cols) + col;
-}
-
-fn calcula_tam_caminho(path: &[i32], matriz: &mut Vec<i32>) -> i32 {
+fn calcula_tam_caminho(path: &[usize], matriz: &Vec<Vec<i32>>) -> i32 {
     let mut size = 0;
     let mut i = 0;
+
     while i + 1 < path.len() {
-        size = matriz
-            .get(calcular_index(path[i], path[i + 1], path.len() as i32) as usize)
-            .unwrap()
-            + size;
+        size += matriz[path[i]][path[i + 1]];
         i += 1;
     }
-    size = matriz
-        .get(calcular_index(path[i], path[0], path.len() as i32) as usize)
-        .unwrap()
-        + size;
+    size += matriz[path[i]][path[0]];
 
     return size;
 }
