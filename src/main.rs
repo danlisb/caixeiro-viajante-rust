@@ -1,3 +1,4 @@
+use core::num;
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
@@ -60,6 +61,7 @@ fn main() {
     println!("Matriz: {:?}", valores_matriz);
 
     let mut best_size = i32::MAX;
+    let min_path: &mut Vec<usize> = &mut Vec::new();
 
     println!();
 
@@ -69,13 +71,19 @@ fn main() {
         1,
         &valores_matriz,
         &mut best_size,
+        min_path,
     );
     let total_time = SystemTime::now().duration_since(start).unwrap();
+    
+    // Puts the first element in the end of the vector (return to start)
+    min_path.push(min_path[0]);
 
     println!(
         "\nBest size (dps de rodar pinzon-rodrigues-lisboa): {}",
         best_size
     );
+
+    println!("Best path: {:?}", min_path);
 
     print!(
         "Execução terminada em: {} segundos",
@@ -88,19 +96,21 @@ fn pinzon_rodrigues_lisboa(
     start: usize,
     matriz: &Vec<Vec<i32>>,
     size_path: &mut i32,
+    min_path: &mut Vec<usize>,
 ) {
     if start == numbers.len() {
         let temp_size_path = calcula_tam_caminho(numbers, matriz);
 
         if *size_path > temp_size_path {
             *size_path = temp_size_path;
+            *min_path = numbers.to_vec();
         }
         return;
     }
 
     for i in start..numbers.len() {
         numbers.swap(start, i);
-        pinzon_rodrigues_lisboa(numbers, start + 1, matriz, size_path);
+        pinzon_rodrigues_lisboa(numbers, start + 1, matriz, size_path, min_path);
         numbers.swap(start, i);
     }
 }
